@@ -1,0 +1,31 @@
+name: Orchestrator
+
+on:
+  push:
+    paths:
+      - 'design/narrative.json' # Only triggers when story changes
+    branches:
+      - main
+
+jobs:
+  dispatch-jules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Read Narrative Change
+        id: read_story
+        run: |
+          # Simple diff check or reading the file content
+          STORY_CONTENT=$(cat design/narrative.json | jq -c .)
+          echo "STORY_JSON=$STORY_CONTENT" >> $GITHUB_ENV
+
+      - name: Trigger Jules
+        run: |
+          curl -X POST https://jules.googleapis.com/v1alpha/sessions \
+          -H "Authorization: Bearer ${{ secrets.JULES_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "repository": "${{ github.repository }}",
+            "prompt": "The narrative file has been updated with: ${{ env.STORY_JSON }}. Please implement the required C# classes and Unit Tests adhering to AGENTS.md. Create a Pull Request when done."
+          }'

@@ -1,0 +1,15 @@
+# Agent Constitution
+
+## System Architecture
+1. **Nodes vs Resources:** Use `Node` for logic that needs lifecycle (`_Process`). Use `Resource` for data (stats, configs).
+2. **Signals:** Do not hard-reference other systems. Use `[Signal]` and connect them in the Scene Tree or via a global EventBus.
+
+## Testing Standards
+1. **Headless Friendly:** Tests must not depend on a window being drawn.
+2. **Location:** All tests go in `test/src/`.
+3. **Naming:** Test classes must end in `Test.cs`.
+
+## File Structure
+- `src/` - All game logic.
+- `src/Content/` - Generated content (Enemies, Items).
+- `test/` - Unit tests.
