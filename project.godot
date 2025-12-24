@@ -20,4 +20,4 @@ project/assembly_name="ZeroTouchGame"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
+enabled=PackedStringArray("res://addons/StoryImporter/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")

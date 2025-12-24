@@ -1,0 +1,46 @@
+#if TOOLS
+using Godot;
+using Godot.Collections;
+
+[Tool]
+public partial class StoryImporter : EditorImportPlugin
+{
+    public override string _GetImporterName() => "narrative.json.importer";
+    public override string _GetVisibleName() => "Story JSON";
+    public override string[] _GetRecognizedExtensions() => new[] { "json" };
+    public override string _GetResourceType() => "PackedScene";
+    public override string _GetSaveExtension() => "scn";
+    public override float _GetPriority() => 1.0f;
+    public override int _GetPresetCount() => 0;
+
+    public override Array<Dictionary> _GetImportOptions(string path, int presetIndex)
+    {
+        return new Array<Dictionary>();
+    }
+
+    public override Error _Import(string sourceFile, string savePath, Dictionary options, Array<string> platformVariants, Array<string> genFiles)
+    {
+        // 1. Read JSON
+        var file = FileAccess.Open(sourceFile, FileAccess.ModeFlags.Read);
+        var jsonText = file.GetAsText();
+        file.Close();
+        
+        var json = new Json();
+        if (json.Parse(jsonText) != Error.Ok) return Error.ParseError;
+        
+        var data = json.Data.AsGodotDictionary();
+        
+        // 2. Build Scene
+        // Assume "inherits" path is valid for this PoC
+        var baseScenePath = (string)data["inherits"]; 
+        var baseScene = GD.Load<PackedScene>(baseScenePath);
+        var root = baseScene.Instantiate();
+        root.Name = (string)data["id"];
+        
+        // 3. Save
+        var scene = new PackedScene();
+        scene.Pack(root);
+        return ResourceSaver.Save(scene, $"{savePath}.{_GetSaveExtension()}");
+    }
+}
+#endif
