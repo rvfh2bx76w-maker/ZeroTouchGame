@@ -111,6 +111,7 @@ WorldEnvironmentPath = NodePath("../../WorldEnvironment")
 [node name="PlayerRoot" type="Node3D" parent="."]
 
 [node name="Player" type="CharacterBody3D" parent="PlayerRoot" groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 0)
 collision_layer = 2
 collision_mask = 13
 script = ExtResource("14_pctrl")
@@ -123,6 +124,7 @@ shape = SubResource("CapsuleShape3D_player")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
 [node name="Camera3D" type="Camera3D" parent="PlayerRoot/Player/Head"]
+current = true
 
 [node name="PlayerStats" type="Node" parent="PlayerRoot/Player"]
 script = ExtResource("12_pstats")

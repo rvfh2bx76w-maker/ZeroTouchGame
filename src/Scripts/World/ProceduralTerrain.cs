@@ -35,7 +35,7 @@ public partial class ProceduralTerrain : Node3D
         var material = new StandardMaterial3D();
         material.AlbedoTexture = texture;
         material.Roughness = 1.0f;
-        // material.AlbedoColor = new Color(0.2f, 0.6f, 0.2f); // Fallback
+        material.AlbedoColor = new Color(1, 1, 1); // Ensure white so texture shows
         surfaceTool.SetMaterial(material);
 
         for (int z = 0; z < Depth; z++)
@@ -89,17 +89,22 @@ public partial class ProceduralTerrain : Node3D
         // OR we can use CreateTrimeshCollision() on the MeshInstance.
 
         // Let's find the MeshInstance we just made
+        if (GetChildCount() == 0) return;
+
         var meshInstance = GetChild(0) as MeshInstance3D;
         if (meshInstance != null)
         {
             meshInstance.CreateTrimeshCollision();
 
             // Set layer to World (Layer 1)
-            var staticBody = meshInstance.GetChild(0) as StaticBody3D;
-            if (staticBody != null)
+            if (meshInstance.GetChildCount() > 0)
             {
-                staticBody.CollisionLayer = 1;
-                staticBody.CollisionMask = 0;
+                var staticBody = meshInstance.GetChild(0) as StaticBody3D;
+                if (staticBody != null)
+                {
+                    staticBody.CollisionLayer = 1;
+                    staticBody.CollisionMask = 0;
+                }
             }
         }
     }
