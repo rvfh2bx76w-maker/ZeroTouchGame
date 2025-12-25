@@ -1,8 +1,8 @@
 using Godot;
 
-public partial class TextureGenerator : Node
+public static class TextureGenerator
 {
-    public Texture2D GenerateTerrainTexture(int width, int height)
+    public static Texture2D GenerateTerrainTexture(int width, int height)
     {
         var image = Image.Create(width, height, false, Image.Format.Rgb8);
         var noise = new FastNoiseLite();

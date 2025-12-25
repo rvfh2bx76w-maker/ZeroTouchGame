@@ -30,8 +30,7 @@ public partial class ProceduralTerrain : Node3D
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
         // Procedural Texture Material
-        var texGen = new TextureGenerator();
-        var texture = texGen.GenerateTerrainTexture(512, 512);
+        var texture = TextureGenerator.GenerateTerrainTexture(512, 512);
 
         var material = new StandardMaterial3D();
         material.AlbedoTexture = texture;
