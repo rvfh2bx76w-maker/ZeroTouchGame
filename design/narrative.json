@@ -1,5 +1,0 @@
-{
-  id Goblin,
-  inherits resBaseEnemy.tscn,
-  components { Stats { Health 50 } }
-}
