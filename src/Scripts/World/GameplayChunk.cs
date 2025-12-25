@@ -56,11 +56,12 @@ public partial class GameplayChunk : Node3D
             Spawn(AmbientAudioPocket, rng, "ambient_pocket");
 
         // --- Procedural Props (Backfill) ---
-        // Spawn 3 to 8 trees per chunk
+        // Spawn 3 to 8 High-Fidelity Trees per chunk
         int treeCount = rng.Next(3, 9);
         for (int i = 0; i < treeCount; i++)
         {
-            var tree = ProceduralProps.CreateTree();
+            var tree = new TreeGenerator();
+            tree.Seed = rng.Next();
             AddChild(tree);
 
             float px = (float)rng.NextDouble() * _size;
@@ -76,6 +77,26 @@ public partial class GameplayChunk : Node3D
             // Random scale variation
             float scale = 0.8f + (float)rng.NextDouble() * 0.4f;
             tree.Scale = new Vector3(scale, scale, scale);
+        }
+
+        // Spawn Enemies (10% chance per chunk)
+        if (rng.NextDouble() < 0.10)
+        {
+            var enemy = new EnemyGenerator();
+            AddChild(enemy);
+            enemy.Position = new Vector3((float)rng.NextDouble() * _size, 0, (float)rng.NextDouble() * _size);
+        }
+
+        // Spawn Cabin (Rare, replacing Outpost logic for now if null)
+        if (isOutpostChunk && TribeOutpost == null)
+        {
+            var cabin = new CabinGenerator();
+            AddChild(cabin);
+            cabin.Position = new Vector3(_size/2, 0, _size/2);
+
+            // Attach interaction
+            var propScript = new ClaimableProperty();
+            cabin.AddChild(propScript);
         }
     }
 

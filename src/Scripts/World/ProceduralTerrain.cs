@@ -29,9 +29,14 @@ public partial class ProceduralTerrain : Node3D
         var surfaceTool = new SurfaceTool();
         surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
-        // Simple green material
+        // Procedural Texture Material
+        var texGen = new TextureGenerator();
+        var texture = texGen.GenerateTerrainTexture(512, 512);
+
         var material = new StandardMaterial3D();
-        material.AlbedoColor = new Color(0.2f, 0.6f, 0.2f); // Grass Green
+        material.AlbedoTexture = texture;
+        material.Roughness = 1.0f;
+        // material.AlbedoColor = new Color(0.2f, 0.6f, 0.2f); // Fallback
         surfaceTool.SetMaterial(material);
 
         for (int z = 0; z < Depth; z++)
@@ -50,15 +55,21 @@ public partial class ProceduralTerrain : Node3D
                 Vector3 v3 = new Vector3(x * Scale, y3, (z + 1) * Scale);
                 Vector3 v4 = new Vector3((x + 1) * Scale, y4, (z + 1) * Scale);
 
+                // UVs (Planar mapping)
+                Vector2 uv1 = new Vector2((float)x / Width, (float)z / Depth);
+                Vector2 uv2 = new Vector2((float)(x + 1) / Width, (float)z / Depth);
+                Vector2 uv3 = new Vector2((float)x / Width, (float)(z + 1) / Depth);
+                Vector2 uv4 = new Vector2((float)(x + 1) / Width, (float)(z + 1) / Depth);
+
                 // Triangle 1
-                surfaceTool.AddVertex(v1);
-                surfaceTool.AddVertex(v2);
-                surfaceTool.AddVertex(v3);
+                surfaceTool.SetUV(uv1); surfaceTool.AddVertex(v1);
+                surfaceTool.SetUV(uv2); surfaceTool.AddVertex(v2);
+                surfaceTool.SetUV(uv3); surfaceTool.AddVertex(v3);
 
                 // Triangle 2
-                surfaceTool.AddVertex(v2);
-                surfaceTool.AddVertex(v4);
-                surfaceTool.AddVertex(v3);
+                surfaceTool.SetUV(uv2); surfaceTool.AddVertex(v2);
+                surfaceTool.SetUV(uv4); surfaceTool.AddVertex(v4);
+                surfaceTool.SetUV(uv3); surfaceTool.AddVertex(v3);
             }
         }
 
