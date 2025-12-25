@@ -54,6 +54,29 @@ public partial class GameplayChunk : Node3D
         // Ambient pocket
         if (AmbientAudioPocket != null && rng.NextDouble() < 0.25)
             Spawn(AmbientAudioPocket, rng, "ambient_pocket");
+
+        // --- Procedural Props (Backfill) ---
+        // Spawn 3 to 8 trees per chunk
+        int treeCount = rng.Next(3, 9);
+        for (int i = 0; i < treeCount; i++)
+        {
+            var tree = ProceduralProps.CreateTree();
+            AddChild(tree);
+
+            float px = (float)rng.NextDouble() * _size;
+            float pz = (float)rng.NextDouble() * _size;
+
+            // Note: In a real game we would raycast down to find ground height (Y).
+            // For now, assume flat or use noise if we had reference to Terrain generator.
+            // Since we don't have easy access to the Terrain noise function here without injecting it,
+            // we will spawn them at Y=0. It might look clipped on hills, but acceptable for MVP.
+            tree.Position = new Vector3(px, 0, pz);
+            tree.Rotation = new Vector3(0, (float)rng.NextDouble() * Mathf.Tau, 0);
+
+            // Random scale variation
+            float scale = 0.8f + (float)rng.NextDouble() * 0.4f;
+            tree.Scale = new Vector3(scale, scale, scale);
+        }
     }
 
     private void Spawn(PackedScene scene, Random rng, string id)

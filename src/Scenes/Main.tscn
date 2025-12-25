@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b8x6yq4z3n2p"]
+[gd_scene load_steps=23 format=3 uid="uid://b8x6yq4z3n2p"]
 
 [ext_resource type="Script" path="res://src/Scripts/Systems/SceneFlow.cs" id="1_sceneflow"]
 [ext_resource type="Script" path="res://src/Scripts/Autoload/SaveService.cs" id="2_saveservice"]
@@ -18,6 +18,8 @@
 [ext_resource type="Script" path="res://src/Scripts/Player/PlayerInteraction.cs" id="16_pinteract"]
 [ext_resource type="Script" path="res://src/Scripts/UI/InteractionHUD.cs" id="17_hud"]
 [ext_resource type="Script" path="res://src/Scripts/UI/DialogueUI.cs" id="18_dui"]
+[ext_resource type="Script" path="res://src/Scripts/World/DungeonPortal.cs" id="19_portal"]
+[ext_resource type="PackedScene" uid="uid://c9x8y7z6m5n4" path="res://src/Scenes/DungeonInterior.tscn" id="20_dungeonscn"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 
@@ -30,6 +32,9 @@ sky_material = SubResource("ProceduralSkyMaterial_env")
 background_mode = 2
 sky = SubResource("Sky_env")
 tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_portal"]
+size = Vector3(2, 3, 1)
 
 [node name="Main" type="Node"]
 
@@ -74,6 +79,26 @@ GameplayChunkScene = ExtResource("15_chunkscn")
 [node name="TerrainRoot" type="Node3D" parent="World/OverworldRoot"]
 script = ExtResource("9_terrain")
 
+[node name="Props" type="Node3D" parent="World/OverworldRoot"]
+
+[node name="DungeonPortal" type="Area3D" parent="World/OverworldRoot/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 5)
+script = ExtResource("19_portal")
+DungeonInteriorScene = ExtResource("20_dungeonscn")
+SceneFlowPath = NodePath("../../../../Services/SceneFlow")
+PlayerReturnMarkerPath = NodePath("../ReturnMarker")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/OverworldRoot/Props/DungeonPortal"]
+shape = SubResource("BoxShape3D_portal")
+
+[node name="Label3D" type="Label3D" parent="World/OverworldRoot/Props/DungeonPortal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+text = "ENTER DUNGEON"
+font_size = 48
+
+[node name="ReturnMarker" type="Marker3D" parent="World/OverworldRoot/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 8)
+
 [node name="DungeonRoot" type="Node3D" parent="World"]
 visible = false
 script = ExtResource("10_dungeon")
@@ -85,7 +110,7 @@ WorldEnvironmentPath = NodePath("../../WorldEnvironment")
 
 [node name="PlayerRoot" type="Node3D" parent="."]
 
-[node name="Player" type="CharacterBody3D" parent="PlayerRoot"]
+[node name="Player" type="CharacterBody3D" parent="PlayerRoot" groups=["player"]]
 collision_layer = 2
 collision_mask = 13
 script = ExtResource("14_pctrl")

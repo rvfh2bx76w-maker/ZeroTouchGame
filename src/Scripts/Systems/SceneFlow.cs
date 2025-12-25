@@ -30,6 +30,10 @@ public partial class SceneFlow : Node
         _overworldRoot.Visible = false;
         _overworldRoot.ProcessMode = ProcessModeEnum.Disabled;
 
+        // Show dungeon root
+        _dungeonRoot.Visible = true;
+        _dungeonRoot.ProcessMode = ProcessModeEnum.Inherit;
+
         if (_activeDungeon != null && IsInstanceValid(_activeDungeon))
             _activeDungeon.QueueFree();
 
@@ -50,6 +54,10 @@ public partial class SceneFlow : Node
 
         _overworldRoot.Visible = true;
         _overworldRoot.ProcessMode = ProcessModeEnum.Inherit;
+
+        // Hide dungeon root
+        _dungeonRoot.Visible = false;
+        _dungeonRoot.ProcessMode = ProcessModeEnum.Disabled;
 
         var player = GetTree().GetFirstNodeInGroup("player") as Node3D;
         if (player != null) player.GlobalTransform = playerReturnSpawn;
