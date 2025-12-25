@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://b8x6yq4z3n2p"]
+[gd_scene load_steps=19 format=3 uid="uid://b8x6yq4z3n2p"]
 
 [ext_resource type="Script" path="res://src/Scripts/Systems/SceneFlow.cs" id="1_sceneflow"]
 [ext_resource type="Script" path="res://src/Scripts/Autoload/SaveService.cs" id="2_saveservice"]
@@ -6,13 +6,18 @@
 [ext_resource type="Script" path="res://src/Scripts/Systems/RelationshipSystem.cs" id="4_rel"]
 [ext_resource type="Script" path="res://src/Scripts/Systems/PropertySystem.cs" id="5_prop"]
 [ext_resource type="Script" path="res://src/Scripts/AI/DialogueManager.cs" id="6_dial"]
-[ext_resource type="Script" path="res://src/Scripts/World/OverworldStream.cs" id="7_stream"]
-[ext_resource type="Script" path="res://src/Scripts/World/ProceduralTerrain.cs" id="8_terrain"]
-[ext_resource type="Script" path="res://src/Scripts/World/ProceduralDungeon.cs" id="9_dungeon"]
-[ext_resource type="Script" path="res://src/Scripts/Player/PlayerStats.cs" id="10_pstats"]
-[ext_resource type="Script" path="res://src/Scripts/Player/PlayerCombat.cs" id="11_pcombat"]
-[ext_resource type="Script" path="res://src/Scripts/Player/SimplePlayerController.cs" id="12_pctrl"]
-[ext_resource type="PackedScene" uid="uid://d3j4k5l6m7n8" path="res://src/Scenes/GameplayChunk.tscn" id="13_chunkscn"]
+[ext_resource type="Script" path="res://src/Scripts/Systems/Quest/QuestManager.cs" id="7_quest"]
+[ext_resource type="Script" path="res://src/Scripts/World/OverworldStream.cs" id="8_stream"]
+[ext_resource type="Script" path="res://src/Scripts/World/ProceduralTerrain.cs" id="9_terrain"]
+[ext_resource type="Script" path="res://src/Scripts/World/ProceduralDungeon.cs" id="10_dungeon"]
+[ext_resource type="Script" path="res://src/Scripts/World/TimeOfDay.cs" id="11_tod"]
+[ext_resource type="Script" path="res://src/Scripts/Player/PlayerStats.cs" id="12_pstats"]
+[ext_resource type="Script" path="res://src/Scripts/Player/PlayerCombat.cs" id="13_pcombat"]
+[ext_resource type="Script" path="res://src/Scripts/Player/SimplePlayerController.cs" id="14_pctrl"]
+[ext_resource type="PackedScene" uid="uid://d3j4k5l6m7n8" path="res://src/Scenes/GameplayChunk.tscn" id="15_chunkscn"]
+[ext_resource type="Script" path="res://src/Scripts/Player/PlayerInteraction.cs" id="16_pinteract"]
+[ext_resource type="Script" path="res://src/Scripts/UI/InteractionHUD.cs" id="17_hud"]
+[ext_resource type="Script" path="res://src/Scripts/UI/DialogueUI.cs" id="18_dui"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 
@@ -51,6 +56,9 @@ script = ExtResource("5_prop")
 [node name="DialogueManager" type="Node" parent="Services" groups=["service_dialogue"]]
 script = ExtResource("6_dial")
 
+[node name="QuestManager" type="Node" parent="Services" groups=["service_quest"]]
+script = ExtResource("7_quest")
+
 [node name="World" type="Node" parent="."]
 
 [node name="OverworldRoot" type="Node3D" parent="World"]
@@ -58,24 +66,29 @@ script = ExtResource("6_dial")
 [node name="GameplayRoot" type="Node3D" parent="World/OverworldRoot"]
 
 [node name="OverworldStream" type="Node3D" parent="World/OverworldRoot/GameplayRoot"]
-script = ExtResource("7_stream")
+script = ExtResource("8_stream")
 PlayerPath = NodePath("../../../../PlayerRoot/Player")
 GameplayRootPath = NodePath("..")
-GameplayChunkScene = ExtResource("13_chunkscn")
+GameplayChunkScene = ExtResource("15_chunkscn")
 
 [node name="TerrainRoot" type="Node3D" parent="World/OverworldRoot"]
-script = ExtResource("8_terrain")
+script = ExtResource("9_terrain")
 
 [node name="DungeonRoot" type="Node3D" parent="World"]
 visible = false
-script = ExtResource("9_dungeon")
+script = ExtResource("10_dungeon")
+
+[node name="TimeOfDay" type="Node" parent="World"]
+script = ExtResource("11_tod")
+SunPath = NodePath("../../Sun")
+WorldEnvironmentPath = NodePath("../../WorldEnvironment")
 
 [node name="PlayerRoot" type="Node3D" parent="."]
 
 [node name="Player" type="CharacterBody3D" parent="PlayerRoot"]
 collision_layer = 2
 collision_mask = 13
-script = ExtResource("12_pctrl")
+script = ExtResource("14_pctrl")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerRoot/Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -87,11 +100,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 [node name="Camera3D" type="Camera3D" parent="PlayerRoot/Player/Head"]
 
 [node name="PlayerStats" type="Node" parent="PlayerRoot/Player"]
-script = ExtResource("10_pstats")
+script = ExtResource("12_pstats")
 
 [node name="PlayerCombat" type="Node" parent="PlayerRoot/Player"]
-script = ExtResource("11_pcombat")
+script = ExtResource("13_pcombat")
 CameraPath = NodePath("../Head/Camera3D")
+
+[node name="PlayerInteraction" type="Node" parent="PlayerRoot/Player"]
+script = ExtResource("16_pinteract")
+CameraPath = NodePath("../Head/Camera3D")
+HUDPath = NodePath("../../../UI/InteractionHUD")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -103,6 +121,26 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
+
+[node name="InteractionHUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("17_hud")
+
+[node name="DialogueUI" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("18_dui")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_world")
