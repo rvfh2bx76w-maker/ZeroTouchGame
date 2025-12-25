@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://d3j4k5l6m7n8"]
-
-[ext_resource type="Script" path="res://src/Scripts/World/GameplayChunk.cs" id="1_chunk"]
-
-[node name="GameplayChunk" type="Node3D"]
-script = ExtResource("1_chunk")

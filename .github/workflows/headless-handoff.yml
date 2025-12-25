@@ -1,0 +1,67 @@
+name: Headless Handoff
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_test_and_package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+      DOTNET_NOLOGO: "true"
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+      # Smaller cache footprint in CI
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Godot 4.5.1 (.NET)
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: "4.5.1"
+          use-dotnet: true
+          include-templates: false
+
+      - name: Verify toolchain
+        run: |
+          dotnet --version
+          godot --version
+          python3 --version || true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Dotnet build (capture log)
+        run: |
+          mkdir -p dist/handoff_logs
+          dotnet build ZeroTouchGame.sln -c Release 2>&1 | tee dist/handoff_logs/dotnet_build_ci.log
+
+      - name: Headless smoke + package handoff.zip
+        run: |
+          python tools/handoff.py --skip-dotnet --run-smoke --smoke-scene res://Tests/SmokeTest.tscn --smoke-arg --rendering-driver --smoke-arg opengl3 --smoke-arg --rendering-method --smoke-arg gl_compatibility
+
+      - name: Upload handoff artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: handoff-zip
+          path: |
+            dist/handoff.zip
+            dist/handoff_summary.md
+            dist/handoff_manifest.txt
+            dist/handoff_logs/*
