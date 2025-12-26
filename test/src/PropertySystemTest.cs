@@ -6,7 +6,7 @@ using System.Collections.Generic;
 [TestSuite]
 public class PropertySystemTest
 {
-    private PropertySystem _system;
+    private PropertySystem _system = null!;
 
     [Before]
     public void Setup()

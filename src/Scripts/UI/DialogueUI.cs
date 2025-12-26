@@ -5,9 +5,9 @@ public partial class DialogueUI : Control
 {
     [Signal] public delegate void OptionSelectedEventHandler(int index);
 
-    private Panel _panel;
-    private Label _npcLabel;
-    private VBoxContainer _optionsContainer;
+    private Panel _panel = null!;
+    private Label _npcLabel = null!;
+    private VBoxContainer _optionsContainer = null!;
     private List<Button> _optionButtons = new List<Button>();
 
     public override void _Ready()

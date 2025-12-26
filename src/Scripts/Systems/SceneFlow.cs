@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 public partial class SceneFlow : Node
 {
-    [Export] public NodePath OverworldRootPath;
-    [Export] public NodePath DungeonRootPath;
-    [Export] public NodePath FadeOverlayPath; // ColorRect
+    [Export] public NodePath OverworldRootPath = null!;
+    [Export] public NodePath DungeonRootPath = null!;
+    [Export] public NodePath FadeOverlayPath = null!; // ColorRect
     [Export] public float FadeSeconds = 0.25f;
 
     private Node3D _overworldRoot = null!;
@@ -16,9 +16,17 @@ public partial class SceneFlow : Node
 
     public override void _Ready()
     {
-        _overworldRoot = GetNode<Node3D>(OverworldRootPath);
-        _dungeonRoot = GetNode<Node3D>(DungeonRootPath);
-        _fade = GetNode<ColorRect>(FadeOverlayPath);
+        if (OverworldRootPath != null) _overworldRoot = GetNodeOrNull<Node3D>(OverworldRootPath);
+        if (DungeonRootPath != null) _dungeonRoot = GetNodeOrNull<Node3D>(DungeonRootPath);
+        if (FadeOverlayPath != null) _fade = GetNodeOrNull<ColorRect>(FadeOverlayPath);
+
+        if (_overworldRoot == null || _dungeonRoot == null || _fade == null)
+        {
+            GD.PrintErr("SceneFlow: Missing required NodePaths.");
+            SetProcess(false);
+            return;
+        }
+
         _fade.Modulate = new Color(0, 0, 0, 0);
         _fade.Visible = true;
     }

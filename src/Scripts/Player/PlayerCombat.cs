@@ -2,7 +2,7 @@ using Godot;
 
 public partial class PlayerCombat : Node
 {
-    [Export] public NodePath CameraPath;
+    [Export] public NodePath CameraPath = null!;
     [Export] public float LightDamage = 18f;
     [Export] public float HeavyDamage = 30f;
 
@@ -27,8 +27,18 @@ public partial class PlayerCombat : Node
 
     public override void _Ready()
     {
-        _cam = GetNode<Camera3D>(CameraPath);
-        _stats = GetParent().GetNode<PlayerStats>("PlayerStats");
+        if (CameraPath != null) _cam = GetNodeOrNull<Camera3D>(CameraPath);
+
+        if (_cam == null)
+        {
+             GD.PrintErr("PlayerCombat: Missing CameraPath.");
+        }
+
+        _stats = GetParent().GetNodeOrNull<PlayerStats>("PlayerStats");
+        if (_stats == null)
+        {
+             GD.PrintErr("PlayerCombat: Missing PlayerStats sibling.");
+        }
     }
 
     public override void _PhysicsProcess(double delta)

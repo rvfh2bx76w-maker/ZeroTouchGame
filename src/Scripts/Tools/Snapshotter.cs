@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 public partial class Snapshotter : Node3D
 {
-    private SubViewport _viewport;
-    private Camera3D _camera;
-    private Node3D _subjectContainer;
-    private DirectionalLight3D _light;
-    private WorldEnvironment _env;
+    private SubViewport _viewport = null!;
+    private Camera3D _camera = null!;
+    private Node3D _subjectContainer = null!;
+    private DirectionalLight3D _light = null!;
+    private WorldEnvironment _env = null!;
 
     public override void _Ready()
     {

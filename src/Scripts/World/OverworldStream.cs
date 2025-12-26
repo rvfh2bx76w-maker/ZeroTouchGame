@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public partial class OverworldStream : Node3D
 {
-    [Export] public NodePath PlayerPath;
-    [Export] public NodePath GameplayRootPath;
+    [Export] public NodePath PlayerPath = null!;
+    [Export] public NodePath GameplayRootPath = null!;
 
     [Export] public PackedScene GameplayChunkScene = null!;
     [Export] public int ChunkSize = 128;
@@ -18,8 +18,14 @@ public partial class OverworldStream : Node3D
 
     public override void _Ready()
     {
-        _player = GetNode<Node3D>(PlayerPath);
-        _gameplayRoot = GetNode<Node3D>(GameplayRootPath);
+        if (PlayerPath != null) _player = GetNodeOrNull<Node3D>(PlayerPath);
+        if (GameplayRootPath != null) _gameplayRoot = GetNodeOrNull<Node3D>(GameplayRootPath);
+
+        if (_player == null || _gameplayRoot == null || GameplayChunkScene == null)
+        {
+             GD.PrintErr("OverworldStream: Missing configuration.");
+             SetPhysicsProcess(false);
+        }
     }
 
     public override void _PhysicsProcess(double delta)

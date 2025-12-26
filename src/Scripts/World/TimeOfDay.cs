@@ -2,21 +2,29 @@ using Godot;
 
 public partial class TimeOfDay : Node
 {
-    [Export] public NodePath SunPath;
-    [Export] public NodePath WorldEnvironmentPath;
+    [Export] public NodePath SunPath = null!;
+    [Export] public NodePath WorldEnvironmentPath = null!;
 
     [Export] public float DayDurationSeconds = 120.0f; // 2 minutes per day
     [Export] public float StartTime = 0.3f; // 0.0 = Midnight, 0.5 = Noon
 
-    private DirectionalLight3D _sun;
-    private WorldEnvironment _env;
+    private DirectionalLight3D _sun = null!;
+    private WorldEnvironment _env = null!;
 
     public double CurrentTime { get; private set; } // 0.0 to 1.0
 
     public override void _Ready()
     {
-        _sun = GetNode<DirectionalLight3D>(SunPath);
-        _env = GetNode<WorldEnvironment>(WorldEnvironmentPath);
+        if (SunPath != null) _sun = GetNodeOrNull<DirectionalLight3D>(SunPath);
+        if (WorldEnvironmentPath != null) _env = GetNodeOrNull<WorldEnvironment>(WorldEnvironmentPath);
+
+        if (_sun == null || _env == null)
+        {
+             GD.PrintErr("TimeOfDay: Missing SunPath or WorldEnvironmentPath.");
+             SetProcess(false);
+             return;
+        }
+
         CurrentTime = StartTime;
     }
 

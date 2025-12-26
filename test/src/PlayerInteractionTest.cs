@@ -3,10 +3,10 @@ using GdUnit4;
 using static GdUnit4.Assertions;
 
 [TestSuite]
-public class PlayerInteractionTest
+public partial class PlayerInteractionTest
 {
     // A mock interactable class
-    private class MockInteractable : Node, IInteractable
+    private partial class MockInteractable : Node, IInteractable
     {
         public bool Interacted = false;
         public string GetInteractionPrompt() => "Mock Prompt";

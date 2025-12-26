@@ -4,16 +4,26 @@ public partial class DungeonPortal : Area3D
 {
     [Export] public string DungeonId = "shelter_0";
     [Export] public PackedScene DungeonInteriorScene = null!;
-    [Export] public NodePath SceneFlowPath;
-    [Export] public NodePath PlayerReturnMarkerPath; // Marker3D near the overworld door
+    [Export] public NodePath SceneFlowPath = null!;
+    [Export] public NodePath PlayerReturnMarkerPath = null!; // Marker3D near the overworld door
 
     private SceneFlow _flow = null!;
     private Node3D _returnMarker = null!;
 
     public override void _Ready()
     {
-        _flow = GetNode<SceneFlow>(SceneFlowPath);
-        _returnMarker = GetNode<Node3D>(PlayerReturnMarkerPath);
+        if (SceneFlowPath != null) _flow = GetNodeOrNull<SceneFlow>(SceneFlowPath);
+        if (PlayerReturnMarkerPath != null) _returnMarker = GetNodeOrNull<Node3D>(PlayerReturnMarkerPath);
+
+        if (_flow == null || _returnMarker == null)
+        {
+             GD.PrintErr("DungeonPortal: Missing SceneFlowPath or PlayerReturnMarkerPath.");
+             // Disabling collision to prevent issues
+             Monitorable = false;
+             Monitoring = false;
+             return;
+        }
+
         BodyEntered += OnBodyEntered;
     }
 

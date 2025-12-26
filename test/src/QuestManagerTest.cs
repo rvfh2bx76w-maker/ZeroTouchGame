@@ -5,7 +5,7 @@ using static GdUnit4.Assertions;
 [TestSuite]
 public class QuestManagerTest
 {
-    private QuestManager _manager;
+    private QuestManager _manager = null!;
 
     [Before]
     public void Setup()
