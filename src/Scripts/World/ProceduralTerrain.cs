@@ -5,7 +5,7 @@ public partial class ProceduralTerrain : Node3D
 {
     [Export] public int Width = 128;
     [Export] public int Depth = 128;
-    [Export] public float Scale = 1.0f;
+    [Export] public float TerrainScale = 1.0f; // Renamed from Scale to avoid hiding Node3D.Scale
     [Export] public float HeightMultiplier = 10.0f;
     [Export] public int Seed = 1234;
 
@@ -49,10 +49,10 @@ public partial class ProceduralTerrain : Node3D
                 float y3 = _noise.GetNoise2D(x, z + 1) * HeightMultiplier;
                 float y4 = _noise.GetNoise2D(x + 1, z + 1) * HeightMultiplier;
 
-                Vector3 v1 = new Vector3(x * Scale, y1, z * Scale);
-                Vector3 v2 = new Vector3((x + 1) * Scale, y2, z * Scale);
-                Vector3 v3 = new Vector3(x * Scale, y3, (z + 1) * Scale);
-                Vector3 v4 = new Vector3((x + 1) * Scale, y4, (z + 1) * Scale);
+                Vector3 v1 = new Vector3(x * TerrainScale, y1, z * TerrainScale);
+                Vector3 v2 = new Vector3((x + 1) * TerrainScale, y2, z * TerrainScale);
+                Vector3 v3 = new Vector3(x * TerrainScale, y3, (z + 1) * TerrainScale);
+                Vector3 v4 = new Vector3((x + 1) * TerrainScale, y4, (z + 1) * TerrainScale);
 
                 // UVs (Planar mapping)
                 Vector2 uv1 = new Vector2((float)x / Width, (float)z / Depth);
@@ -77,7 +77,7 @@ public partial class ProceduralTerrain : Node3D
         var meshInstance = new MeshInstance3D();
         meshInstance.Mesh = surfaceTool.Commit();
         // Shift it so it centers somewhat
-        meshInstance.Position = new Vector3(-Width * Scale / 2, 0, -Depth * Scale / 2);
+        meshInstance.Position = new Vector3(-Width * TerrainScale / 2, 0, -Depth * TerrainScale / 2);
 
         AddChild(meshInstance);
     }

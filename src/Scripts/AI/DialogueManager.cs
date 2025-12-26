@@ -1,16 +1,17 @@
 using Godot;
 using System;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http; // Keep for other types like StringContent
 
 public partial class DialogueManager : Node
 {
     [Export] public string ApiUrl = "http://localhost:8080/dialogue"; // your NPC AI service
     [Export] public bool UseCache = true;
 
-    private static readonly HttpClient _http = new();
+    // Use full namespace to avoid conflict with Godot.HttpClient
+    private static readonly System.Net.Http.HttpClient _http = new();
 
     public override void _Ready()
     {
