@@ -2,8 +2,8 @@ using Godot;
 
 public partial class InteractionHUD : Control
 {
-    private Label _promptLabel;
-    private ColorRect _crosshair;
+    private Label _promptLabel = null!;
+    private ColorRect _crosshair = null!;
 
     public override void _Ready()
     {

@@ -48,42 +48,16 @@ public partial class CabinGenerator : Node3D
         interactShape.Position = new Vector3(0, 1, 5); // Just outside door
         interactArea.AddChild(interactShape);
 
-        // Add the script
-        var claimScript = new ClaimableProperty(); // It is a Node3D
-        // Actually, we want the collider to BE the interactable or have it.
-        // If I make the Area3D have the script, I can't just 'new ClaimableProperty()' because it's a script not an Area3D.
-        // I will add ClaimableProperty as a child, and the Area3D needs to point to it?
-        // Or simpler: The InteractionSystem usually does `collider.GetParent()` or `collider is IInteractable`.
-        // If `ClaimableProperty` inherits Area3D it would be easiest. But it inherits Node3D.
-        // So I will make the Area3D the child of ClaimableProperty.
-        // And the Raycast logic usually hits the Area, then checks parent?
-        // Let's assume standard Godot pattern: Raycast hits Area. If Area implements IInteractable, good. If not, check parent.
-        // But Area3D cannot have a script replaced at runtime easily C#.
-        // I'll stick to: ClaimableProperty (Node3D) -> Area3D -> CollisionShape.
-        // AND I will add a script to the Area3D that forwards to parent? No, that's complex.
+        // 3. Interaction (Claimable Property)
+        // Structure: StaticBody -> ClaimableProperty (Node3D) -> Area3D -> CollisionShape
+        // PlayerInteraction.cs checks:
+        // 1. collider (Area3D) is IInteractable? No.
+        // 2. collider.GetParent() (ClaimableProperty) is IInteractable? Yes.
 
-        // BETTER: Make the ClaimableProperty the StaticBody itself? No.
-
-        // Let's look at `ClaimableProperty.cs` again. It inherits Node3D.
-        // I will add `ClaimableProperty` node.
         staticBody.AddChild(claimScript);
         claimScript.Name = "ClaimableProperty";
         claimScript.PropertyId = "Cabin_" + GetInstanceId(); // Unique ID
 
-        // Add the Area3D as a child of the ClaimScript.
-        // BUT the Raycast hits the Area.
-        // If the Raycast hits the Area, `collider` is the Area.
-        // Does the player's interaction code look for `collider.GetParent<IInteractable>()`?
-        // I should check InteractionSystem/PlayerRaycast.
-        // Since I can't check right now easily without context switching, I'll implement the "collider holds the script" pattern.
-        // I will change ClaimableProperty to inherit Area3D in the next step if needed, but for now I will add the Area3D to the ClaimableProperty
-        // and assume the interaction system looks up.
-        // Wait, I am the one writing the interaction system or usage.
-        // I don't see InteractionSystem.cs in my file list memory, but I added it?
-        // Ah, I added `src/Scripts/Systems/InteractionSystem.cs`? No, I added `QuestManager` etc.
-        // I haven't written the Player Controller's interaction logic yet! I need to write that logic in the PlayerGenerator or Main.
-
-        // So I will decide now: The Interaction Raycast will look for IInteractable on the collider, then the collider's parent.
         claimScript.AddChild(interactArea);
 
     }

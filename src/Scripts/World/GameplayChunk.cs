@@ -3,10 +3,10 @@ using System;
 
 public partial class GameplayChunk : Node3D
 {
-    [Export] public PackedScene WaterfallWonder = null!;
-    [Export] public PackedScene TribeOutpost = null!;
-    [Export] public PackedScene DungeonPortal = null!;
-    [Export] public PackedScene AmbientAudioPocket = null!;
+    [Export] public PackedScene? WaterfallWonder = null;
+    [Export] public PackedScene? TribeOutpost = null;
+    [Export] public PackedScene? DungeonPortal = null;
+    [Export] public PackedScene? AmbientAudioPocket = null;
 
     private Vector2I _coord;
     private int _size;

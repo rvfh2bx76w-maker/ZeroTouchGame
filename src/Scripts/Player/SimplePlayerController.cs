@@ -2,7 +2,7 @@ using Godot;
 
 public partial class SimplePlayerController : CharacterBody3D
 {
-    [Export] public NodePath HeadPath;
+    [Export] public NodePath HeadPath = null!;
     [Export] public float WalkSpeed = 5.0f;
     [Export] public float SprintSpeed = 7.5f;
     [Export] public float MouseSensitivity = 0.002f;
@@ -14,7 +14,19 @@ public partial class SimplePlayerController : CharacterBody3D
     {
         AddToGroup("player");
         if (HeadPath != null)
-            _head = GetNode<Node3D>(HeadPath);
+            _head = GetNodeOrNull<Node3D>(HeadPath);
+
+        if (_head == null)
+        {
+            // Fallback: Create a head if missing
+            _head = new Node3D();
+            _head.Name = "Head";
+            _head.Position = new Vector3(0, 1.7f, 0);
+            AddChild(_head);
+
+            // If camera is not child of head, it might be an issue, but we assume Camera is attached to Head in Scene or we need to spawn it.
+            // SimplePlayerController assumes the scene structure has a Head.
+        }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 

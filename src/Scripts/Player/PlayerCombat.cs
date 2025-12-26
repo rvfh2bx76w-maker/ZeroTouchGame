@@ -99,9 +99,12 @@ public partial class PlayerCombat : Node
             var collider = hit["collider"].AsGodotObject() as Node;
             if (collider == null) continue;
 
-            var cc = collider as CombatComponent ?? collider.GetParentOrNull<CombatComponent>();
-            if (cc != null)
-                cc.ApplyDamage(damage, source: GetParent());
+            // Check for StatsComponent directly or via parent
+            var stats = collider as StatsComponent ?? collider.GetParentOrNull<StatsComponent>();
+            if (stats != null)
+            {
+                stats.TakeDamage(damage);
+            }
         }
     }
 }

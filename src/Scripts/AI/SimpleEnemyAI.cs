@@ -14,11 +14,25 @@ public partial class SimpleEnemyAI : Node
         // Find player (naive approach for MVP)
         // In a real game, use a detection area or injection
         _target = GetTree().GetFirstNodeInGroup("player") as Node3D;
+
+        if (_target == null)
+        {
+             // If player is not found yet, maybe they spawn later.
+             // We can poll or wait. For now, we will retry in Process.
+        }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (_body == null || _target == null) return;
+        if (_body == null) return;
+
+        // Lazy find target
+        if (_target == null)
+        {
+            _target = GetTree().GetFirstNodeInGroup("player") as Node3D;
+            if (_target == null) return;
+        }
+
         if (!IsTargetInRange()) return;
 
         float speed = _stats?.Speed ?? 5.0f;
