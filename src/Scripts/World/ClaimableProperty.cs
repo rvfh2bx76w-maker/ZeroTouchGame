@@ -1,65 +1,33 @@
 using Godot;
 
-public enum PropertyUnlockMode
-{
-    Persuasion,
-    BossDeed,
-    QuestFlag
-}
-
-public partial class ClaimableProperty : Node3D
+public partial class ClaimableProperty : Node3D, IInteractable
 {
     [Export] public string PropertyId = "cabin_overlook";
-    [Export] public PropertyUnlockMode UnlockMode = PropertyUnlockMode.Persuasion;
-
-    [Export] public string RequiredFactionId = "tribe_valley";
-    [Export] public int RequiredFactionRep = 20;
-
-    [Export] public string RequiredNpcId = "npc_keeper_0";
-    [Export] public float RequiredAffinity = 40f;
-
-    [Export] public string RequiredDeedItemId = "deed_cabin_overlook";
-
-    [Export] public NodePath StorageNodePath; // optional
-    [Export] public NodePath BedNodePath;     // optional
+    [Export] public int Cost = 1000;
 
     public bool IsOwned => PropertySystem.I.IsOwned(PropertyId);
 
-    public bool TryClaimPersuasion()
+    public string GetInteractionPrompt()
     {
-        if (UnlockMode != PropertyUnlockMode.Persuasion) return false;
-
-        var factions = GameRoot.I.FindServiceInGroup<FactionSystem>("service_faction");
-        var rel = GameRoot.I.FindServiceInGroup<RelationshipSystem>("service_relationship");
-
-        if (factions == null || rel == null) return false;
-
-        if (factions.GetRep(RequiredFactionId) < RequiredFactionRep) return false;
-        if (rel.GetAffinity(RequiredNpcId) < RequiredAffinity) return false;
-
-        PropertySystem.I.SetOwned(PropertyId, true);
-        ApplyOwnershipState();
-        return true;
+        return IsOwned ? "Manage Property" : $"Claim Property ({Cost} Gold)";
     }
 
-    // Boss deed route: requires InventoryComponent + ItemDef lookup wired by you
-    public bool TryClaimWithDeed(InventoryComponent inv, ItemDef deedDef)
+    public void Interact(Node interactor)
     {
-        if (UnlockMode != PropertyUnlockMode.BossDeed) return false;
-
-        if (!inv.Remove(deedDef, 1)) return false;
-
-        PropertySystem.I.SetOwned(PropertyId, true);
-        ApplyOwnershipState();
-        return true;
+        if (!IsOwned)
+        {
+            // For MVP, just give it to them
+            PropertySystem.I.SetOwned(PropertyId, true);
+            GD.Print($"Property {PropertyId} claimed!");
+        }
+        else
+        {
+            GD.Print("Property already owned.");
+        }
     }
 
-    public void ApplyOwnershipState()
+    public bool CanInteract(Node interactor)
     {
-        var storage = GetNodeOrNull<Node>(StorageNodePath);
-        if (storage != null) storage.Set("disabled", !IsOwned);
-
-        var bed = GetNodeOrNull<Node>(BedNodePath);
-        if (bed != null) bed.Set("disabled", !IsOwned);
+        return true;
     }
 }

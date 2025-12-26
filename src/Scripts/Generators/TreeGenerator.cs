@@ -1,15 +1,14 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class TreeGenerator : Node3D
 {
-    // High-Fidelity Tree Generation
-    // Uses recursive branching and MultiMesh leaves
-
     [Export] public int Seed = 1234;
     [Export] public int Height = 8;
 
     private Random _rng;
+    private List<Transform3D> _leafTransforms = new List<Transform3D>();
 
     public override void _Ready()
     {
@@ -19,6 +18,8 @@ public partial class TreeGenerator : Node3D
 
     public void Generate()
     {
+        _leafTransforms.Clear();
+
         // 1. Trunk & Branches (Mesh Generation)
         var st = new SurfaceTool();
         st.Begin(Mesh.PrimitiveType.Triangles);
@@ -38,26 +39,45 @@ public partial class TreeGenerator : Node3D
         var trunkMesh = st.Commit();
         var trunkInstance = new MeshInstance3D();
         trunkInstance.Mesh = trunkMesh;
+        trunkInstance.CreateTrimeshCollision(); // Add collision to trunk
         AddChild(trunkInstance);
 
         // 2. Leaves (MultiMesh)
-        var leafMesh = CreateLeafMesh();
-        var multiMesh = new MultiMesh();
-        multiMesh.TransformFormat = MultiMesh.TransformFormatEnum.Transform3D;
-        multiMesh.Mesh = leafMesh;
-        // We'll populate this list during branching
-        // For simplicity in this vertical slice code, let's just scatter them near branch tips
-        // In a full implementation, BuildBranch would return leaf positions.
+        if (_leafTransforms.Count > 0)
+        {
+            var multiMesh = new MultiMesh();
+            multiMesh.TransformFormat = MultiMesh.TransformFormatEnum.Transform3D;
+            multiMesh.Mesh = CreateLeafMesh();
+            multiMesh.InstanceCount = _leafTransforms.Count;
+
+            for (int i = 0; i < _leafTransforms.Count; i++)
+            {
+                multiMesh.SetInstanceTransform(i, _leafTransforms[i]);
+            }
+
+            var mmInstance = new MultiMeshInstance3D();
+            mmInstance.Multimesh = multiMesh;
+            AddChild(mmInstance);
+        }
     }
 
     private void BuildBranch(SurfaceTool st, Vector3 start, Vector3 dir, float length, float radius, int depth)
     {
-        if (depth <= 0) return;
+        if (depth <= 0)
+        {
+            // End of branch, add leaf cluster
+            // Random rotation
+            var basis = Basis.Identity;
+            basis = basis.Rotated(Vector3.Up, (float)_rng.NextDouble() * Mathf.Tau);
+            basis = basis.Rotated(Vector3.Right, (float)_rng.NextDouble() * Mathf.Pi * 0.5f);
+
+            _leafTransforms.Add(new Transform3D(basis, start));
+            return;
+        }
 
         Vector3 end = start + dir * length;
 
-        // Create Cylinder Segment (simplified as a prism for code brevity, but 6-sided)
-        // Ideally we ring-extrude.
+        // Create Cylinder Segment
         CreateCylinderSegment(st, start, end, radius, radius * 0.7f);
 
         // Branching
@@ -77,7 +97,6 @@ public partial class TreeGenerator : Node3D
 
     private void CreateCylinderSegment(SurfaceTool st, Vector3 start, Vector3 end, float r1, float r2)
     {
-        // A simple 6-sided prism for the branch segment
         int segments = 6;
         Vector3 axis = (end - start).Normalized();
         Vector3 t1 = axis.Cross(Vector3.Right).Normalized();
@@ -97,7 +116,6 @@ public partial class TreeGenerator : Node3D
             Vector3 v3 = end + offset2 * r2;
             Vector3 v4 = end + offset1 * r2;
 
-            // Quad as two triangles
             st.AddVertex(v1); st.AddVertex(v2); st.AddVertex(v3);
             st.AddVertex(v1); st.AddVertex(v3); st.AddVertex(v4);
         }
