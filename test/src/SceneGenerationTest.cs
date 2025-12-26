@@ -11,6 +11,6 @@ public class SceneGenerationTest
         builder.BuildMainScene();
 
         // Verify file exists
-        Assert.That(FileAccess.FileExists("res://src/Scenes/Main.tscn")).IsTrue();
+        AssertThat(FileAccess.FileExists("res://src/Scenes/Main.tscn")).IsTrue();
     }
 }

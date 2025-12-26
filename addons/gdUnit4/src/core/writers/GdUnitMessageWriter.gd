@@ -1,5 +1,5 @@
 @tool
-class_name GdUnitMessageWriter
+class_name GdUnitMessageWritter
 extends RefCounted
 ## Base interface class for writing formatted messages to different outputs.[br]
 ## [br]
@@ -71,7 +71,7 @@ var _current_effect := Effect.NONE
 ## [br]
 ## [param value] The color to be used for the text.
 ## Returns self for method chaining.
-func color(value: Color) -> GdUnitMessageWriter:
+func color(value: Color) -> GdUnitMessageWritter:
 	_current_color = value
 	return self
 
@@ -80,7 +80,7 @@ func color(value: Color) -> GdUnitMessageWriter:
 ## [br]
 ## [param value] The number of indentation levels, where each level equals two spaces.
 ## Returns self for method chaining.
-func indent(value: int) -> GdUnitMessageWriter:
+func indent(value: int) -> GdUnitMessageWritter:
 	_current_indent = value
 	return self
 
@@ -89,7 +89,7 @@ func indent(value: int) -> GdUnitMessageWriter:
 ## [br]
 ## [param value] A combination of style flags (BOLD, ITALIC, UNDERLINE).
 ## Returns self for method chaining.
-func style(value: int) -> GdUnitMessageWriter:
+func style(value: int) -> GdUnitMessageWritter:
 	_current_flags = value
 	return self
 
@@ -98,7 +98,7 @@ func style(value: int) -> GdUnitMessageWriter:
 ## [br]
 ## [param value] The effect to apply to the text (NONE, WAVE).
 ## Returns self for method chaining.
-func effect(value: Effect) -> GdUnitMessageWriter:
+func effect(value: Effect) -> GdUnitMessageWritter:
 	_current_effect = value
 	return self
 
@@ -107,7 +107,7 @@ func effect(value: Effect) -> GdUnitMessageWriter:
 ## [br]
 ## [param value] The alignment to use (LEFT, RIGHT).
 ## Returns self for method chaining.
-func align(value: Align) -> GdUnitMessageWriter:
+func align(value: Align) -> GdUnitMessageWritter:
 	_current_align = value
 	return self
 
@@ -121,7 +121,7 @@ func align(value: Align) -> GdUnitMessageWriter:
 ## - align: LEFT[br]
 ## - effect: NONE[br]
 ## Returns self for method chaining.
-func reset() -> GdUnitMessageWriter:
+func reset() -> GdUnitMessageWritter:
 	_current_color = Color.WHITE
 	_current_indent = 0
 	_current_flags = 0

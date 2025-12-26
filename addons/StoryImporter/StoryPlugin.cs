@@ -4,7 +4,7 @@ using Godot;
 [Tool]
 public partial class StoryPlugin : EditorPlugin
 {
-    private StoryImporter _importer;
+    private StoryImporter? _importer;
 
     public override void _EnterTree()
     {
@@ -14,8 +14,11 @@ public partial class StoryPlugin : EditorPlugin
 
     public override void _ExitTree()
     {
-        RemoveImportPlugin(_importer);
-        _importer = null;
+        if (_importer != null)
+        {
+            RemoveImportPlugin(_importer);
+            _importer = null;
+        }
     }
 }
 #endif

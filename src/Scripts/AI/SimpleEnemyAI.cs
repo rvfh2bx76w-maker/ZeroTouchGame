@@ -2,14 +2,14 @@ using Godot;
 
 public partial class SimpleEnemyAI : Node
 {
-    private CharacterBody3D _body;
-    private StatsComponent _stats;
-    private Node3D _target;
+    private CharacterBody3D? _body;
+    private StatsComponent? _stats;
+    private Node3D? _target;
 
     public override void _Ready()
     {
         _body = GetParent() as CharacterBody3D;
-        _stats = _body.GetNodeOrNull<StatsComponent>("StatsComponent");
+        _stats = _body?.GetNodeOrNull<StatsComponent>("StatsComponent");
 
         // Find player (naive approach for MVP)
         // In a real game, use a detection area or injection
@@ -19,6 +19,7 @@ public partial class SimpleEnemyAI : Node
     public override void _PhysicsProcess(double delta)
     {
         if (_body == null || _target == null) return;
+        if (!IsTargetInRange()) return;
 
         float speed = _stats?.Speed ?? 5.0f;
         // The prompt asked for Speed 120. If that is pixels/sec in 2D, it's huge in 3D (meters/sec).
@@ -45,5 +46,11 @@ public partial class SimpleEnemyAI : Node
             rot.Y = Mathf.LerpAngle(rot.Y, targetAngle, 5f * (float)delta);
             _body.Rotation = rot;
         }
+    }
+
+    private bool IsTargetInRange()
+    {
+        if (_body == null || _target == null || _stats == null) return false;
+        return _body.GlobalPosition.DistanceTo(_target.GlobalPosition) <= _stats.AggroRange;
     }
 }

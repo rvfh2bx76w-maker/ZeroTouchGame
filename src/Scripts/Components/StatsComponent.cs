@@ -4,6 +4,7 @@ public partial class StatsComponent : Node
 {
     [Export] public float Health = 100f;
     [Export] public float Speed = 5.0f;
+    [Export] public float AggroRange = 100f;
 
     public void TakeDamage(float amount)
     {

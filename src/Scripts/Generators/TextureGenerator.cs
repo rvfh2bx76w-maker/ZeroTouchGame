@@ -4,7 +4,7 @@ public static class TextureGenerator
 {
     public static Texture2D GenerateTerrainTexture(int width, int height)
     {
-        var image = Image.Create(width, height, false, Image.Format.Rgb8);
+        var image = Image.CreateEmpty(width, height, false, Image.Format.Rgb8);
         var noise = new FastNoiseLite();
         noise.Seed = 1234;
         noise.Frequency = 0.05f;

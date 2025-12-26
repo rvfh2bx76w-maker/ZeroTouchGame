@@ -9,9 +9,9 @@ public partial class PlayerInteraction : Node
     // Collision mask for Interactables (Layer 4)
     [Export] public uint InteractionMask = 1u << 3; // Layer 4 (0-indexed 3)
 
-    private Camera3D _camera;
-    private InteractionHUD _hud;
-    private IInteractable _currentInteractable;
+    private Camera3D _camera = null!;
+    private InteractionHUD _hud = null!;
+    private IInteractable? _currentInteractable;
 
     public override void _Ready()
     {
@@ -71,7 +71,7 @@ public partial class PlayerInteraction : Node
         }
     }
 
-    private IInteractable GetInteractable(Node node)
+    private IInteractable? GetInteractable(Node node)
     {
         if (node is IInteractable i) return i;
         if (node.GetParent() is IInteractable p) return p;

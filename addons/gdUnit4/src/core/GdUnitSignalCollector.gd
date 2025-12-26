@@ -23,16 +23,11 @@ func clear() -> void:
 
 # connect to all possible signals defined by the emitter
 # prepares the signal collection to store received signals and arguments
-func register_emitter(emitter: Object, force_recreate := false) -> void:
+func register_emitter(emitter :Object) -> void:
 	if is_instance_valid(emitter):
 		# check emitter is already registerd
 		if _collected_signals.has(emitter):
-			if not force_recreate:
-				return
-			# If the flag recreate is set to true, emitters that are already registered must be deregistered before recreating,
-			# otherwise signals that have already been collected will be evaluated.
-			unregister_emitter(emitter)
-
+			return
 		_collected_signals[emitter] = Dictionary()
 		# connect to 'tree_exiting' of the emitter to finally release all acquired resources/connections.
 		if emitter is Node and !(emitter as Node).tree_exiting.is_connected(unregister_emitter):

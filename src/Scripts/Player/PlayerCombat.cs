@@ -67,7 +67,7 @@ public partial class PlayerCombat : Node
 
     private void SweepHit(float damage)
     {
-        var space = GetWorld3D().DirectSpaceState;
+        var space = GetParent<Node3D>().GetWorld3D().DirectSpaceState;
 
         Vector3 origin = _cam.GlobalPosition;
         Vector3 forward = -_cam.GlobalTransform.Basis.Z;
